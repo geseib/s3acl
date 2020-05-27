@@ -10,7 +10,7 @@ Metadata:
     SpdxLicenseId: Apache-2.0
     LicenseUrl: LICENSE.txt
     ReadmeUrl: README.md
-    Labels: ['S3']
+    Labels: ['codepipeline','s3']
     HomePageUrl: https://github.com/geseib/s3acl
     SemanticVersion: 0.0.4
     SourceCodeUrl: https://github.com/geseib/s3acl
