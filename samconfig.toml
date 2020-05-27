@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "vpcintro-s3"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-vrf86npzrr2w"
+s3_prefix = "vpcintro-s3"
+region = "us-east-1"
+profile = "workshop"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+

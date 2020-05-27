@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: codepipeline-s3-objects-public-read
+    Description: Configure ACL for each object to make public
+    Author: George Seib
+    SpdxLicenseId: Apache-2.0
+    LicenseUrl: LICENSE.txt
+    ReadmeUrl: README.md
+    Labels: ['S3']
+    HomePageUrl: https://github.com/geseib/s3acl
+    SemanticVersion: 0.0.4
+    SourceCodeUrl: https://github.com/geseib/s3acl
+
+Outputs:
+  PublicReadAclFunctionArn:
+    Value:
+      Fn::GetAtt:
+      - PublicReadAclFunction
+      - Arn
+  PublicReadAclFunctionName:
+    Value:
+      Ref: PublicReadAclFunction
+
+Parameters:
+  BuildArtifactParameter:
+    Default: BuildArtifact
+    Type: String
+  S3BucketParameter:
+    Type: String
+
+Resources:
+ PublicReadAclFunction:   
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      CodeUri: app
+      Description: ''
+      MemorySize: 128
+      Timeout: 900
+      Environment:
+        Variables:
+          BUILD_ARTIFACT:
+            Ref: BuildArtifactParameter
+          S3_BUCKET:
+            Ref: S3BucketParameter
+      Policies:
+        - Statement:
+          - Action:
+            - s3:GetObject
+            - s3:GetObjectAcl
+            - s3:GetObjectVersion
+            - s3:PutObject
+            - s3:PutObjectAcl
+            - s3:DeleteObject
+            Resource:
+            - Fn::Sub:
+              - arn:${AWS::Partition}:s3:::${bucketName}/*
+              - bucketName:
+                  Ref: S3BucketParameter
+            Effect: Allow
+          - Action:
+            - s3:ListBucket
+            - s3:GetBucketLocation
+            - s3:GetLifecycleConfiguration
+            - s3:PutLifecycleConfiguration
+            Resource:
+            - Fn::Sub:
+              - arn:${AWS::Partition}:s3:::${bucketName}
+              - bucketName:
+                  Ref: S3BucketParameter
+            Effect: Allow
+        - Statement:
+          - Action:
+            - codepipeline:PutJobSuccessResult
+            - codepipeline:PutJobFailureResult
+            Resource: '*'
+            Effect: Allow
+    
